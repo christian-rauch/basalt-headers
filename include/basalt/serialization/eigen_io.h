@@ -44,67 +44,147 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace cereal {
 
-// NOTE: Serialization functions for non-basalt types are marked static to
-// ensure internal linkage, which allows different and incompatible definitions
-// in other libraries that also include basalt-headers (as long as they are not
-// included in the same translation unit). See
-// https://groups.google.com/d/msg/cerealcpp/WswQi_Sh-bw/Pw0GrfIqFQAJ for a more
-// detailed discussion.
+// NOTE: Serialization functions for non-basalt types (for now Eigen and Sophus)
+// are provided in a separate header to make them available to other libraries
+// depending on basalt-headers. Beware that it is not possible to have different
+// and incompatible definitions for these same types in other libraries or
+// executables that also include basalt-headers, as this would lead to undefined
+// behaviour. See
+// https://groups.google.com/d/topic/cerealcpp/WswQi_Sh-bw/discussion for a more
+// detailed discussion and possible workarounds.
 
+// For binary-archives, don't save a size tag for compact representation.
 template <class Archive, class _Scalar, int _Rows, int _Cols, int _Options,
           int _MaxRows, int _MaxCols>
-static inline
-    typename std::enable_if<_Rows != Eigen::Dynamic && _Cols != Eigen::Dynamic,
-                            void>::type
-    serialize(
-        Archive& archive,
-        Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& m) {
-  static_assert(_Rows > 0, "matrix should be static size");
-  static_assert(_Cols > 0, "matrix should be static size");
-  cereal::size_type s = _Rows * _Cols;
-  archive(cereal::make_size_tag(s));
+std::enable_if_t<(_Rows > 0) && (_Cols > 0) &&
+                 !traits::is_text_archive<Archive>::value>
+serialize(
+    Archive& archive,
+    Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& m) {
+  for (int i = 0; i < _Rows; i++) {
+    for (int j = 0; j < _Cols; j++) {
+      archive(m(i, j));
+    }
+  }
+  // Note: if we can break binary compatibility, we might want to consider the
+  // following. However, this would only work for compact Scalar types that can
+  // be serialized / deserialized by memcopy, such as double.
+  // archive(binary_data(m.data(), _Rows * _Cols * sizeof(_Scalar)));
+}
+
+// For text-archives, save size-tag even for constant size matrices, to ensure
+// that the serialization is more compact (e.g. for JSON with size tag is uses a
+// simple array, whereas without, it stores a list of pairs like ("value0", v0).
+template <class Archive, class _Scalar, int _Rows, int _Cols, int _Options,
+          int _MaxRows, int _MaxCols>
+std::enable_if_t<(_Rows > 0) && (_Cols > 0) &&
+                 traits::is_text_archive<Archive>::value>
+serialize(
+    Archive& archive,
+    Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>& m) {
+  size_type s = static_cast<size_type>(_Rows * _Cols);
+  archive(make_size_tag(s));
   if (s != _Rows * _Cols) {
     throw std::runtime_error("matrix has incorrect length");
   }
-  for (size_t i = 0; i < _Rows; i++)
-    for (size_t j = 0; j < _Cols; j++) archive(m(i, j));
+  for (size_t i = 0; i < _Rows; i++) {
+    for (size_t j = 0; j < _Cols; j++) {
+      archive(m(i, j));
+    }
+  }
 }
 
-template <class Archive, class _Scalar, int _Rows, int _Cols, int _Options,
-          int _MaxRows, int _MaxCols>
-static inline
-    typename std::enable_if<_Rows == Eigen::Dynamic || _Cols == Eigen::Dynamic,
-                            void>::type
-    save(Archive &ar, const Eigen::Matrix<_Scalar, _Rows, _Cols, _Options,
-                                          _MaxRows, _MaxCols> &matrix) {
-  const std::int32_t rows = static_cast<std::int32_t>(matrix.rows());
-  const std::int32_t cols = static_cast<std::int32_t>(matrix.cols());
-  ar(rows);
-  ar(cols);
-  ar(binary_data(matrix.data(), rows * cols * sizeof(_Scalar)));
-};
+template <class Archive, class _Scalar, int _Cols, int _Options, int _MaxRows,
+          int _MaxCols>
+std::enable_if_t<(_Cols > 0), void> save(
+    Archive& archive, const Eigen::Matrix<_Scalar, Eigen::Dynamic, _Cols,
+                                          _Options, _MaxRows, _MaxCols>& m) {
+  archive(make_size_tag(static_cast<size_type>(m.size())));
+  for (int i = 0; i < m.rows(); i++) {
+    for (int j = 0; j < _Cols; j++) {
+      archive(m(i, j));
+    }
+  }
+}
 
-template <class Archive, class _Scalar, int _Rows, int _Cols, int _Options,
-          int _MaxRows, int _MaxCols>
-static inline
-    typename std::enable_if<_Rows == Eigen::Dynamic || _Cols == Eigen::Dynamic,
-                            void>::type
-    load(Archive &ar,
-         Eigen::Matrix<_Scalar, _Rows, _Cols, _Options, _MaxRows, _MaxCols>
-             &matrix) {
-  std::int32_t rows;
-  std::int32_t cols;
-  ar(rows);
-  ar(cols);
+template <class Archive, class _Scalar, int _Cols, int _Options, int _MaxRows,
+          int _MaxCols>
+std::enable_if_t<(_Cols > 0), void> load(
+    Archive& archive,
+    Eigen::Matrix<_Scalar, Eigen::Dynamic, _Cols, _Options, _MaxRows, _MaxCols>&
+        m) {
+  size_type size;
+  archive(make_size_tag(size));
+  m.resize(Eigen::Index(size) / _Cols, _Cols);
+  for (int i = 0; i < m.rows(); i++) {
+    for (int j = 0; j < _Cols; j++) {
+      archive(m(i, j));
+    }
+  }
+}
 
-  matrix.resize(rows, cols);
+template <class Archive, class _Scalar, int _Rows, int _Options, int _MaxRows,
+          int _MaxCols>
+std::enable_if_t<(_Rows > 0), void> save(
+    Archive& archive, const Eigen::Matrix<_Scalar, _Rows, Eigen::Dynamic,
+                                          _Options, _MaxRows, _MaxCols>& m) {
+  archive(make_size_tag(static_cast<size_type>(m.size())));
+  for (int i = 0; i < _Rows; i++) {
+    for (int j = 0; j < m.cols(); j++) {
+      archive(m(i, j));
+    }
+  }
+}
 
-  ar(binary_data(matrix.data(),
-                 static_cast<std::size_t>(rows * cols * sizeof(_Scalar))));
-};
+template <class Archive, class _Scalar, int _Rows, int _Options, int _MaxRows,
+          int _MaxCols>
+std::enable_if_t<(_Rows > 0), void> load(
+    Archive& archive,
+    Eigen::Matrix<_Scalar, _Rows, Eigen::Dynamic, _Options, _MaxRows, _MaxCols>&
+        m) {
+  size_type size;
+  archive(make_size_tag(size));
+  m.resize(_Rows, Eigen::Index(size) / _Rows);
+  for (int i = 0; i < _Rows; i++) {
+    for (int j = 0; j < m.cols(); j++) {
+      archive(m(i, j));
+    }
+  }
+}
 
-template <class Archive, class Scalar>
-static inline void serialize(Archive& ar, Sophus::SE3<Scalar>& p) {
+template <class Archive, class _Scalar, int _Options, int _MaxRows,
+          int _MaxCols>
+void save(Archive& archive,
+          const Eigen::Matrix<_Scalar, Eigen::Dynamic, Eigen::Dynamic, _Options,
+                              _MaxRows, _MaxCols>& m) {
+  archive(make_size_tag(static_cast<size_type>(m.rows())));
+  archive(make_size_tag(static_cast<size_type>(m.cols())));
+  for (int i = 0; i < m.rows(); i++) {
+    for (int j = 0; j < m.cols(); j++) {
+      archive(m(i, j));
+    }
+  }
+}
+
+template <class Archive, class _Scalar, int _Options, int _MaxRows,
+          int _MaxCols>
+void load(Archive& archive,
+          Eigen::Matrix<_Scalar, Eigen::Dynamic, Eigen::Dynamic, _Options,
+                        _MaxRows, _MaxCols>& m) {
+  size_type rows;
+  size_type cols;
+  archive(make_size_tag(rows));
+  archive(make_size_tag(cols));
+  m.resize(rows, cols);
+  for (int i = 0; i < m.rows(); i++) {
+    for (int j = 0; j < m.cols(); j++) {
+      archive(m(i, j));
+    }
+  }
+}
+
+template <class Archive>
+void serialize(Archive& ar, Sophus::SE3d& p) {
   ar(cereal::make_nvp("px", p.translation()[0]),
      cereal::make_nvp("py", p.translation()[1]),
      cereal::make_nvp("pz", p.translation()[2]),
@@ -112,6 +192,17 @@ static inline void serialize(Archive& ar, Sophus::SE3<Scalar>& p) {
      cereal::make_nvp("qy", p.so3().data()[1]),
      cereal::make_nvp("qz", p.so3().data()[2]),
      cereal::make_nvp("qw", p.so3().data()[3]));
+}
+
+template <class Archive>
+void serialize(Archive& ar, Sophus::Sim3d& p) {
+  ar(cereal::make_nvp("px", p.translation()[0]),
+     cereal::make_nvp("py", p.translation()[1]),
+     cereal::make_nvp("pz", p.translation()[2]),
+     cereal::make_nvp("qx", p.rxso3().data()[0]),
+     cereal::make_nvp("qy", p.rxso3().data()[1]),
+     cereal::make_nvp("qz", p.rxso3().data()[2]),
+     cereal::make_nvp("qw", p.rxso3().data()[3]));
 }
 
 }  // namespace cereal
