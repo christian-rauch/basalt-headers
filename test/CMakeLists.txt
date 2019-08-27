@@ -7,7 +7,7 @@ endif(NOT TARGET gtest_main)
 include_directories(include)
 
 add_executable(test_image src/test_image.cpp)
-target_link_libraries(test_image gtest gtest_main basalt)
+target_link_libraries(test_image gtest gtest_main)
 
 add_executable(test_spline src/test_spline.cpp)
 target_link_libraries(test_spline gtest gtest_main)
