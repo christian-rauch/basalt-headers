@@ -116,7 +116,7 @@ class DoubleSphereCamera {
   /// with respect to p3d
   /// @param[out] d_proj_d_param point if not nullptr computed Jacobian of
   /// projection with respect to intrinsic parameters
-  /// @return if unprojection is valid
+  /// @return if projection is valid
   inline bool project(const Vec4& p3d, Vec2& proj,
                       Mat24* d_proj_d_p3d = nullptr,
                       Mat2N* d_proj_d_param = nullptr) const {
