@@ -33,7 +33,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @file
-@brief Common functions used for evaluation of splines
+@brief Common functions for b-spline evaluation
 */
 
 #pragma once
@@ -43,6 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace basalt {
 
+/// @brief Compute binomial coefficient.
+///
+/// Computes number of combinations that include k objects out of n.
+/// @param[in] n
+/// @param[in] k
+/// @return binomial coefficient
 constexpr inline uint64_t C_n_k(uint64_t n, uint64_t k) {
   if (k > n) {
     return 0;
@@ -55,6 +61,11 @@ constexpr inline uint64_t C_n_k(uint64_t n, uint64_t k) {
   return r;
 }
 
+/// @brief Compute blending matrix for uniform b-spline evaluation.
+///
+/// @param _N order of the spline
+/// @param _Scalar scalar type to use
+/// @param _Cumulative if the spline should be cumulative
 template <int _N, typename _Scalar = double, bool _Cumulative = false>
 Eigen::Matrix<_Scalar, _N, _N> computeBlendingMatrix() {
   Eigen::Matrix<double, _N, _N> m;
@@ -88,6 +99,23 @@ Eigen::Matrix<_Scalar, _N, _N> computeBlendingMatrix() {
   return (m / factorial).template cast<_Scalar>();
 }
 
+/// @brief Compute base coefficient matrix for polynomials of size N.
+///
+/// In each row starting from 0 contains the derivative coefficients of the
+/// polynomial. For _N=5 we get the following matrix: \f[ \begin{bmatrix}
+///   1 & 1 & 1 & 1 & 1
+/// \\0 & 1 & 2 & 3 & 4
+/// \\0 & 0 & 2 & 6 & 12
+/// \\0 & 0 & 0 & 6 & 24
+/// \\0 & 0 & 0 & 0 & 24
+/// \\ \end{bmatrix}
+/// \f]
+/// Functions \ref RdSpline::baseCoeffsWithTime and \ref
+/// So3Spline::baseCoeffsWithTime use this matrix to compute derivatives of the
+/// time polynomial.
+///
+/// @param _N order of the polynomial
+/// @param _Scalar scalar type to use
 template <int _N, typename _Scalar = double>
 Eigen::Matrix<_Scalar, _N, _N> computeBaseCoefficients() {
   Eigen::Matrix<double, _N, _N> base_coefficients;

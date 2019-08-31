@@ -293,7 +293,7 @@ class So3Spline {
 
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
- private:
+ protected:
   template <int Derivative, class Derived>
   static void baseCoeffsWithTime(const Eigen::MatrixBase<Derived>& res_const,
                                  _Scalar t) {
