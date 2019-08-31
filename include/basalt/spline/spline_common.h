@@ -31,6 +31,9 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+@file
+@brief Common functions used for evaluation of splines
 */
 
 #pragma once
@@ -40,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace basalt {
 
-inline uint64_t C_n_k(uint64_t n, uint64_t k) {
+constexpr inline uint64_t C_n_k(uint64_t n, uint64_t k) {
   if (k > n) {
     return 0;
   }

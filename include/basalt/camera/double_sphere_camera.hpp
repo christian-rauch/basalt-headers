@@ -91,23 +91,24 @@ class DoubleSphereCamera {
   /// \f{align}{
   ///    \pi(\mathbf{x}, \mathbf{i}) &=
   ///    \begin{bmatrix}
-  ///    f_x{\frac{x}{\alpha d_2 + (1-\alpha) (\xi d_1 + z)}}\\
-  ///    f_y{\frac{y}{\alpha d_2 + (1-\alpha) (\xi d_1 + z)}}\\
-  ///    \end{bmatrix}
+  ///    f_x{\frac{x}{\alpha d_2 + (1-\alpha) (\xi d_1 + z)}}
+  ///    \\ f_y{\frac{y}{\alpha d_2 + (1-\alpha) (\xi d_1 + z)}}
+  ///    \\ \end{bmatrix}
   ///    +
   ///    \begin{bmatrix}
-  ///    c_x \\
-  ///    c_y\\
-  ///    \end{bmatrix}, \\
-  ///    d_1 &= \sqrt{x^2 + y^2 + z^2}, \\
-  ///    d_2 &= \sqrt{x^2 + y^2 + (\xi  d_1 + z)^2}.
+  ///    c_x
+  ///    \\ c_y
+  ///    \\ \end{bmatrix},
+  ///    \\ d_1 &= \sqrt{x^2 + y^2 + z^2},
+  ///    \\ d_2 &= \sqrt{x^2 + y^2 + (\xi  d_1 + z)^2}.
   /// \f}
   /// A set of 3D points that results in valid projection is expressed as
   /// follows: \f{align}{
-  ///    \Omega &= \{\mathbf{x} \in \mathbb{R}^3 ~|~ z > -w_2 d_1 \} \\
-  ///    w_2 &= \frac{w_1+\xi}{\sqrt{2w_1\xi + \xi^2 + 1}} \\
-  ///    w_1 &= \begin{cases} \frac{\alpha}{1-\alpha}, & \mbox{if } \alpha \le
-  ///    0.5 \\ \frac{1-\alpha}{\alpha} & \mbox{if } \alpha > 0.5 \end{cases}
+  ///    \Omega &= \{\mathbf{x} \in \mathbb{R}^3 ~|~ z > -w_2 d_1 \}
+  ///    \\ w_2 &= \frac{w_1+\xi}{\sqrt{2w_1\xi + \xi^2 + 1}}
+  ///    \\ w_1 &= \begin{cases} \frac{\alpha}{1-\alpha}, & \mbox{if } \alpha
+  ///    \le 0.5 \\ \frac{1-\alpha}{\alpha} & \mbox{if } \alpha > 0.5
+  ///    \end{cases}
   /// \f}
   ///
   /// @param[in] p3d point to project
@@ -216,25 +217,22 @@ class DoubleSphereCamera {
   ///    \pi^{-1}(\mathbf{u}, \mathbf{i}) &=
   ///    \frac{m_z \xi + \sqrt{m_z^2 + (1 - \xi^2) r^2}}{m_z^2 + r^2}
   ///    \begin{bmatrix}
-  ///    m_x \\
-  ///    m_y \\
-  ///    m_z \\
-  ///    \end{bmatrix}-\begin{bmatrix}
-  ///    0 \\
-  ///    0 \\
-  ///    \xi \\
-  ///    \end{bmatrix}, \\
-  ///    m_x &= \frac{u - c_x}{f_x}, \\
-  ///    m_y &= \frac{v - c_y}{f_y}, \\
-  ///    r^2 &= m_x^2 + m_y^2, \\
-  ///    m_z &= \frac{1 - \alpha^2  r^2}{\alpha  \sqrt{1 - (2 \alpha - 1)  r^2}
+  ///    m_x \\ m_y \\m_z
+  ///    \\ \end{bmatrix}-\begin{bmatrix}
+  ///    0 \\ 0 \\ \xi
+  ///    \\ \end{bmatrix},
+  ///    \\ m_x &= \frac{u - c_x}{f_x},
+  ///    \\ m_y &= \frac{v - c_y}{f_y},
+  ///    \\ r^2 &= m_x^2 + m_y^2,
+  ///    \\ m_z &= \frac{1 - \alpha^2  r^2}{\alpha  \sqrt{1 - (2 \alpha - 1)
+  ///    r^2}
   ///    + 1 - \alpha},
   /// \f}
   ///
   /// The valid range of unprojections is \f{align}{
   ///    \Theta &= \begin{cases}
-  ///    \mathbb{R}^2 & \mbox{if } \alpha \le 0.5 \\
-  ///    \{ \mathbf{u} \in \mathbb{R}^2 ~|~ r^2 \le \frac{1}{2\alpha-1} \}  &
+  ///    \mathbb{R}^2 & \mbox{if } \alpha \le 0.5
+  ///    \\ \{ \mathbf{u} \in \mathbb{R}^2 ~|~ r^2 \le \frac{1}{2\alpha-1} \}  &
   ///    \mbox{if} \alpha > 0.5 \end{cases}
   /// \f}
   ///
