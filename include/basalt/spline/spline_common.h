@@ -33,7 +33,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 @file
-@brief Common functions used for evaluation of splines
+@brief Common functions for b-spline evaluation
 */
 
 #pragma once
@@ -43,6 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace basalt {
 
+/// @brief Compute binomial coefficient.
+///
+/// Computes number of combinations that include k objects out of n.
+/// @param[in] n
+/// @param[in] k
+/// @return binomial coefficient
 constexpr inline uint64_t C_n_k(uint64_t n, uint64_t k) {
   if (k > n) {
     return 0;
