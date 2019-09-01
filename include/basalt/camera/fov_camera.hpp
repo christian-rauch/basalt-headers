@@ -200,13 +200,13 @@ class FovCamera {
   /// The unprojection function is computed as follows: \f{align}{
   ///     \pi^{-1}(\mathbf{u}, \mathbf{i}) &=
   ///  \begin{bmatrix}
-  ///  m_x \frac{\sin(r_d w)}{ 2 r_d \tan{\frac{w}{2}}}  \\
-  ///  m_y \frac{\sin(r_d w)}{ 2 r_d \tan{\frac{w}{2}}}  \\
-  ///  \cos(r_d w) \\
-  ///  \end{bmatrix}, \\
-  ///  m_x &= \frac{u - c_x}{f_x}, \\
-  ///  m_y &= \frac{v - c_y}{f_y}, \\
-  ///  r_d &= \sqrt{m_x^2 + m_y^2}.
+  ///  m_x \frac{\sin(r_d w)}{ 2 r_d \tan{\frac{w}{2}}}
+  ///  \\ m_y \frac{\sin(r_d w)}{ 2 r_d \tan{\frac{w}{2}}}
+  ///  \\ \cos(r_d w)
+  ///  \\ \end{bmatrix},
+  ///  \\ m_x &= \frac{u - c_x}{f_x},
+  ///  \\ m_y &= \frac{v - c_y}{f_y},
+  ///  \\ r_d &= \sqrt{m_x^2 + m_y^2}.
   /// \f}
   ///
   ///

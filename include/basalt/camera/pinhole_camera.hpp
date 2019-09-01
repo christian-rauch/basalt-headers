@@ -235,8 +235,7 @@ class PinholeCamera {
     param[5] = 1;
   }
 
-  /// @brief Increment intrinsic parameters by inc and clamp the values to the
-  /// valid range
+  /// @brief Increment intrinsic parameters by inc
   ///
   /// @param[in] inc increment vector
   void operator+=(const VecN& inc) { param += inc; }

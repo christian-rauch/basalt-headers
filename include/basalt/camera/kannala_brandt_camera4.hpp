@@ -299,14 +299,14 @@ class KannalaBrandtCamera4 {
   /// The unprojection function is computed as follows: \f{align}{
   ///     \pi^{-1}(\mathbf{u}, \mathbf{i}) &=
   ///  \begin{bmatrix}
-  ///  \sin(\theta^{*}) ~ \frac{m_x}{r_{\theta}}  \\
-  ///  \sin(\theta^{*}) ~ \frac{m_y}{r_{\theta}}  \\
-  ///  \cos(\theta^{*}) \\
-  ///  \end{bmatrix}, \\
-  ///  m_x &= \frac{u - c_x}{f_x}, \\
-  ///  m_y &= \frac{v - c_y}{f_y}, \\
-  ///  r_{\theta} &= \sqrt{m_x^2 + m_y^2}, \\
-  ///  \theta^{*} &= d^{-1}(r_{\theta}).
+  ///  \sin(\theta^{*}) ~ \frac{m_x}{r_{\theta}}
+  ///  \\ \sin(\theta^{*}) ~ \frac{m_y}{r_{\theta}}
+  ///  \\ \cos(\theta^{*})
+  ///  \\ \end{bmatrix},
+  ///  \\ m_x &= \frac{u - c_x}{f_x},
+  ///  \\ m_y &= \frac{v - c_y}{f_y},
+  ///  \\ r_{\theta} &= \sqrt{m_x^2 + m_y^2},
+  ///  \\ \theta^{*} &= d^{-1}(r_{\theta}).
   /// \f}
   ///
   /// \f$\theta^{*}\f$ is the solution of \f$d(\theta)=r_{\theta}\f$. See \ref
