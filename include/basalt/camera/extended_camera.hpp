@@ -71,7 +71,7 @@ class ExtendedUnifiedCamera {
 
   /// @brief Construct camera model with given vector of intrinsics
   ///
-  /// @param[in] p vector of intrinsic parameters [fx, fy, cx, cy, xi, alpha]
+  /// @param[in] p vector of intrinsic parameters [fx, fy, cx, cy, alpha, beta]
   explicit ExtendedUnifiedCamera(const VecN& p) { param = p; }
 
   /// @brief Cast to different scalar type
@@ -342,7 +342,7 @@ class ExtendedUnifiedCamera {
 
   /// @brief Returns a const reference to the intrinsic parameters vector
   ///
-  /// The order is following: \f$ \left[f_x, f_y, c_x, c_y, \xi, \alpha
+  /// The order is following: \f$ \left[f_x, f_y, c_x, c_y, \alpha, \beta
   /// \right]^T \f$
   /// @return const reference to the intrinsic parameters vector
   const VecN& getParam() const { return param; }
