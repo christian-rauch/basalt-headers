@@ -48,7 +48,8 @@ namespace basalt {
 /// The projection is defined on the entire
 /// sphere, except at one point: the projection point. Where it is defined, the
 /// mapping is smooth and bijective. The illustrations shows 3 examples of unit
-/// vectors parametrized with a point in the 2D plane.
+/// vectors parametrized with a point in the 2D plane. See
+/// \ref project and \ref unproject functions for more details.
 template <typename Scalar = double>
 class StereographicParam {
  public:
