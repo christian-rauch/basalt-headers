@@ -42,10 +42,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace basalt {
 
+/// @brief Unified camera model
+///
+/// \image html ucm.png
+/// This model has N=5 parameters \f$ \mathbf{i} = \left[f_x, f_y, c_x, c_y,
+/// \alpha \right]^T \f$ with \f$ \alpha \in [0,1] \f$.
+/// See \ref project and \ref unproject functions for more details.
 template <typename Scalar = double>
 class UnifiedCamera {
  public:
-  static constexpr int N = 5;
+  static constexpr int N = 5;  ///< Number of intrinsic parameters.
 
   using Vec2 = Eigen::Matrix<Scalar, 2, 1>;
   using Vec4 = Eigen::Matrix<Scalar, 4, 1>;
