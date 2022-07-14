@@ -51,7 +51,9 @@ template <class Scalar>
 struct Calibration {
   using Ptr = std::shared_ptr<Calibration>;
   using SE3 = Sophus::SE3<Scalar>;
+  using Vec2 = Eigen::Matrix<Scalar, 2, 1>;
   using Vec3 = Eigen::Matrix<Scalar, 3, 1>;
+  using Vec4 = Eigen::Matrix<Scalar, 4, 1>;
 
   /// @brief Default constructor.
   Calibration() {
@@ -64,6 +66,22 @@ struct Calibration {
     accel_noise_std.setConstant(0.016);
     accel_bias_std.setConstant(0.001);
     gyro_bias_std.setConstant(0.0001);
+  }
+
+  Vec2 viewOffset(const Vec2& c0_uv, Scalar depth) const {
+    SE3 T_c1_c0 = T_i_c[1].inverse() * T_i_c[0];
+
+    Vec4 c0_xyzw;
+    intrinsics[0].unproject(c0_uv, c0_xyzw);
+    c0_xyzw = c0_xyzw * depth;
+    c0_xyzw.w() = 1;
+
+    Vec4 c1_xyzw = T_c1_c0 * c0_xyzw;
+    Vec2 c1_uv;
+    intrinsics[1].project(c1_xyzw, c1_uv);
+
+    Vec2 view_offset = c0_uv - c1_uv;
+    return view_offset;
   }
 
   /// @brief Cast to other scalar type
