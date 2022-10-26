@@ -38,14 +38,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
+#include <vector>
+
 #include <basalt/image/image.h>
 
 namespace basalt {
 
-/// @brief Image pyramid that stores levels as mipmap
+/// @brief Image pyramid stored in separate and progressively smaller
+/// ManagedImages
 ///
 /// \image html mipmap.jpeg
-/// Computes image pyramid (see \ref subsample) and stores it as a mipmap
+/// Computes image pyramid (see \ref subsample) and stores the subsamples
 /// (https://en.wikipedia.org/wiki/Mipmap).
 class ManagedImagePyr {
  public:
@@ -56,25 +59,29 @@ class ManagedImagePyr {
 
   /// @brief Construct image pyramid from other image.
   ///
-  /// @param other image to use for the pyramid level 0
-  /// @param num_level number of levels for the pyramid
-  inline ManagedImagePyr(const ManagedImage& other, size_t num_levels) {
-    setFromImage(other, num_levels);
+  /// @param img image to use for the pyramid level 0
+  /// @param num_level number of levels for the pyramid (excluding level 0)
+  inline ManagedImagePyr(ManagedImage::Ptr img, size_t num_levels) {
+    setFromImage(img, num_levels);
   }
 
-  /// @brief Set image pyramid from other image.
+  /// @brief Create image pyramid from @p img.
   ///
-  /// @param other image to use for the pyramid level 0
+  /// @param img image to use for the pyramid level 0
   /// @param num_level number of levels for the pyramid
-  inline void setFromImage(const ManagedImage& other, size_t num_levels) {
-    orig_w = other.w;
-    image.Reinitialise(other.w + other.w / 2, other.h, other.t);
-    image.Fill(0);
-    lvl_internal(0).CopyFrom(other);
+  inline void setFromImage(ManagedImage::Ptr img, size_t num_levels) {
+    levels = std::vector<ManagedImage::Ptr>(num_levels + 1);
+    levels[0] = img;
+
+    for (size_t i = 1; i <= num_levels; i++) {
+      size_t w = img->w >> i;
+      size_t h = img->h >> i;
+      levels[i] = std::make_shared<ManagedImage>(w, h, img->t);
+    };
 
     for (size_t i = 0; i < num_levels; i++) {
-      const Image l = lvl(i);
-      Image lp1 = lvl_internal(i + 1);
+      const Image& l = *levels[i];
+      Image& lp1 = *levels[i + 1];
       subsample(l, lp1);
     }
   }
@@ -159,49 +166,10 @@ class ManagedImagePyr {
   ///
   /// @param lvl level to return
   /// @return const image of with the pyramid level
-  inline Image lvl(size_t lvl) const {
-    size_t x = (lvl == 0) ? 0 : orig_w;
-    size_t y = (lvl <= 1) ? 0 : (image.h - (image.h >> (lvl - 1)));
-    size_t width = (orig_w >> lvl);
-    size_t height = (image.h >> lvl);
-
-    return image.SubImage(x, y, width, height);
-  }
-
-  /// @brief Return const image of underlying mipmap
-  ///
-  /// @return const image of of the underlying mipmap representation which can
-  /// be for example used for visualization
-  inline Image mipmap() const { return image.SubImage(0, 0, image.w, image.h); }
-
-  /// @brief Return coordinate offset of the image in the mipmap image.
-  ///
-  /// @param lvl level to return
-  /// @return offset coordinates (2x1 vector)
-  template <typename S>
-  inline Eigen::Matrix<S, 2, 1> lvl_offset(size_t lvl) {
-    size_t x = (lvl == 0) ? 0 : orig_w;
-    size_t y = (lvl <= 1) ? 0 : (image.h - (image.h >> (lvl - 1)));
-
-    return Eigen::Matrix<S, 2, 1>(x, y);
-  }
+  inline const Image& lvl(size_t lvl) const { return *levels[lvl]; }
 
  protected:
-  /// @brief Return image of the certain level
-  ///
-  /// @param lvl level to return
-  /// @return image of with the pyramid level
-  inline Image lvl_internal(size_t lvl) {
-    size_t x = (lvl == 0) ? 0 : orig_w;
-    size_t y = (lvl <= 1) ? 0 : (image.h - (image.h >> (lvl - 1)));
-    size_t width = (orig_w >> lvl);
-    size_t height = (image.h >> lvl);
-
-    return image.SubImage(x, y, width, height);
-  }
-
-  size_t orig_w;       ///< Width of the original image (level 0)
-  ManagedImage image;  ///< Pyramid image stored as a mipmap
+  std::vector<ManagedImage::Ptr> levels;
 };
 
 }  // namespace basalt
