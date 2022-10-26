@@ -18,8 +18,8 @@ void setImageData(uint16_t* image_array, int size) {
 TEST(Image, ImageInterpolate) {
   Eigen::Vector2i offset(231, 123);
 
-  basalt::ManagedImage<uint16_t> img(640, 480);
-  setImageData(img.ptr, img.size());
+  basalt::ManagedImage img(640, 480, basalt::Image::U16);
+  setImageData((uint16_t*)img.ptr, img.Area());
 
   double eps = 1e-12;
   double threshold = 1e-6;
@@ -28,7 +28,7 @@ TEST(Image, ImageInterpolate) {
     const Eigen::Vector2i& pi = offset;
     Eigen::Vector2d pd = pi.cast<double>() + Eigen::Vector2d(eps, eps);
 
-    uint16_t val1 = img(pi);
+    uint16_t val1 = img.at<uint16_t>(pi);
     double val2 = img.interp(pd);
     double val3 = img.interpGrad(pd)[0];
 
@@ -40,7 +40,7 @@ TEST(Image, ImageInterpolate) {
     const Eigen::Vector2i& pi = offset;
     Eigen::Vector2d pd = pi.cast<double>() + Eigen::Vector2d(eps, eps);
 
-    uint16_t val1 = img(pi);
+    uint16_t val1 = img.at<uint16_t>(pi);
     double val2 = img.interp(pd);
     double val3 = img.interpGrad(pd)[0];
 
@@ -52,7 +52,7 @@ TEST(Image, ImageInterpolate) {
     Eigen::Vector2i pi = offset + Eigen::Vector2i(1, 0);
     Eigen::Vector2d pd = pi.cast<double>() + Eigen::Vector2d(-eps, eps);
 
-    uint16_t val1 = img(pi);
+    uint16_t val1 = img.at<uint16_t>(pi);
     double val2 = img.interp(pd);
     double val3 = img.interpGrad(pd)[0];
 
@@ -64,7 +64,7 @@ TEST(Image, ImageInterpolate) {
     Eigen::Vector2i pi = offset + Eigen::Vector2i(0, 1);
     Eigen::Vector2d pd = pi.cast<double>() + Eigen::Vector2d(eps, -eps);
 
-    uint16_t val1 = img(pi);
+    uint16_t val1 = img.at<uint16_t>(pi);
     double val2 = img.interp(pd);
     double val3 = img.interpGrad(pd)[0];
 
@@ -76,7 +76,7 @@ TEST(Image, ImageInterpolate) {
     Eigen::Vector2i pi = offset + Eigen::Vector2i(1, 1);
     Eigen::Vector2d pd = pi.cast<double>() + Eigen::Vector2d(-eps, -eps);
 
-    uint16_t val1 = img(pi);
+    uint16_t val1 = img.at<uint16_t>(pi);
     double val2 = img.interp(pd);
     double val3 = img.interpGrad(pd)[0];
 
@@ -88,8 +88,8 @@ TEST(Image, ImageInterpolate) {
 TEST(Image, ImageInterpolateGrad) {
   Eigen::Vector2i offset(231, 123);
 
-  basalt::ManagedImage<uint16_t> img(640, 480);
-  setImageData(img.ptr, img.size());
+  basalt::ManagedImage img(640, 480, basalt::Image::U16);
+  setImageData((uint16_t*)img.ptr, img.Area());
 
   Eigen::Vector2d pd = offset.cast<double>() + Eigen::Vector2d(0.4, 0.34345);
 
@@ -108,8 +108,8 @@ TEST(Image, ImageInterpolateGrad) {
 TEST(Image, ImageInterpolateGradBilinearExact) {
   Eigen::Vector2i offset(231, 123);
 
-  basalt::ManagedImage<uint16_t> img(640, 480);
-  setImageData(img.ptr, img.size());
+  basalt::ManagedImage img(640, 480, basalt::Image::U16);
+  setImageData((uint16_t*)img.ptr, img.Area());
 
   Eigen::Vector2d pd = offset.cast<double>() + Eigen::Vector2d(0.4, 0.34345);
 
@@ -127,8 +127,8 @@ TEST(Image, ImageInterpolateGradBilinearExact) {
 TEST(Image, ImageInterpolateGradCubicSplines) {
   Eigen::Vector2i offset(231, 123);
 
-  basalt::ManagedImage<uint16_t> img(640, 480);
-  setImageData(img.ptr, img.size());
+  basalt::ManagedImage img(640, 480, basalt::Image::U16);
+  setImageData((uint16_t*)img.ptr, img.Area());
 
   Eigen::Vector2d pd = offset.cast<double>() + Eigen::Vector2d(0.4, 0.34345);
 
