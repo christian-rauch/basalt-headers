@@ -9,7 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 FOLDER="${1:-$SCRIPT_DIR/../include $SCRIPT_DIR/../test/src $SCRIPT_DIR/../test/include}"
 
-CLANG_FORMAT_COMMANDS="clang-format-12 clang-format-11 clang-format-10 clang-format"
+CLANG_FORMAT_COMMANDS="clang-format-15 clang-format-14 clang-format-13 clang-format-12 clang-format-11 clang-format-10 clang-format-9 clang-format"
 
 # find the first available command:
 for CMD in $CLANG_FORMAT_COMMANDS; do
@@ -23,7 +23,7 @@ if [ -z $CLANG_FORMAT_CMD ]; then
     echo "clang-format not installed..."
     exit 1
 fi
-    
+
 # clang format check version
 MAJOR_VERSION_NEEDED=10
 
