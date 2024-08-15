@@ -68,14 +68,14 @@ struct Calibration {
     gyro_bias_std.setConstant(0.0001);
   }
 
-  /// @brief Reprojection offset of a point with a given depth from source camera to the target camera
-  Vec2 reprojection_offset(const Vec2& cs_uv, Scalar depth, int source_cam_idx = 0, int target_cam_idx = 1) const {
+  /// @brief Reprojection offset of a point with a given inverse depth from source camera to the target camera
+  Vec2 reprojection_offset(const Vec2& cs_uv, Scalar inv_depth, int source_cam_idx = 0, int target_cam_idx = 1) const {
     SE3 T_ct_cs = T_i_c[target_cam_idx].inverse() * T_i_c[source_cam_idx];
 
     Vec4 cs_xyzw;
     intrinsics[source_cam_idx].unproject(cs_uv, c0_xyzw);
-    cs_xyzw = cs_xyzw * depth;
-    cs_xyzw.w() = 1;
+    cs_xyzw = cs_xyzw;
+    cs_xyzw.w() = inv_depth;
 
     Vec4 ct_xyzw = T_ct_cs * cs_xyzw;
     Vec2 ct_uv;
