@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10...3.18)
+cmake_minimum_required(VERSION 3.23)
 
 include(CMakePackageConfigHelpers)
 
@@ -82,40 +82,43 @@ target_include_directories(basalt-headers INTERFACE
     "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
-# List all header files with target_sources.
-# This ensures, e.g., that QtCreator >= 6.0 properly recognize these headers to belong to the project.
-# To support cmake < 3.13, use absolute paths (see: https://crascit.com/2016/01/31/enhanced-source-file-handling-with-target_sources/)
 target_sources(basalt-headers
-  INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/calibration/calib_bias.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/calibration/calibration.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/bal_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/camera_static_assert.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/double_sphere_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/extended_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/fov_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/generic_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/kannala_brandt_camera4.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/pinhole_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/stereographic_param.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/camera/unified_camera.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/image/image.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/image/image_pyr.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/imu/imu_types.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/imu/preintegration.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/serialization/eigen_io.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/serialization/headers_serialization.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/ceres_local_param.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/ceres_spline_helper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/rd_spline.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/se3_spline.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/so3_spline.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/spline/spline_common.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/utils/assert.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/utils/eigen_utils.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/utils/hash.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/basalt/utils/sophus_utils.hpp
+  PUBLIC
+    FILE_SET public_headers
+    TYPE HEADERS
+    FILES
+        include/basalt/calibration/calib_bias.hpp
+        include/basalt/calibration/calibration.hpp
+        include/basalt/camera/bal_camera.hpp
+        include/basalt/camera/camera_static_assert.hpp
+        include/basalt/camera/double_sphere_camera.hpp
+        include/basalt/camera/extended_camera.hpp
+        include/basalt/camera/fov_camera.hpp
+        include/basalt/camera/generic_camera.hpp
+        include/basalt/camera/kannala_brandt_camera4.hpp
+        include/basalt/camera/pinhole_camera.hpp
+        include/basalt/camera/stereographic_param.hpp
+        include/basalt/camera/unified_camera.hpp
+        include/basalt/image/image.h
+        include/basalt/image/image_pyr.h
+        include/basalt/imu/imu_types.h
+        include/basalt/imu/preintegration.h
+        include/basalt/serialization/eigen_io.h
+        include/basalt/serialization/headers_serialization.h
+        include/basalt/spline/ceres_local_param.hpp
+        include/basalt/spline/ceres_spline_helper.h
+        include/basalt/spline/rd_spline.h
+        include/basalt/spline/se3_spline.h
+        include/basalt/spline/so3_spline.h
+        include/basalt/spline/spline_common.h
+        include/basalt/utils/assert.h
+        include/basalt/utils/eigen_utils.hpp
+        include/basalt/utils/hash.h
+        include/basalt/utils/sophus_utils.hpp
 )
+
+# NOTE: The target "basalt-headers" has to be installed by any project using this project
+#       in order to install the headers.
 
 if((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR BASALT_HEADERS_BUILD_TESTING) AND BUILD_TESTING)
   enable_testing()
