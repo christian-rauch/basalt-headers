@@ -97,6 +97,7 @@ target_sources(basalt-headers
         include/basalt/camera/generic_camera.hpp
         include/basalt/camera/kannala_brandt_camera4.hpp
         include/basalt/camera/pinhole_camera.hpp
+        include/basalt/camera/pinhole_radtan8_camera.hpp
         include/basalt/camera/stereographic_param.hpp
         include/basalt/camera/unified_camera.hpp
         include/basalt/image/image.h
